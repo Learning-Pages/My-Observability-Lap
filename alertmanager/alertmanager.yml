@@ -1,0 +1,28 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: default
+  group_by: [alertname, cluster]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  routes:
+    - matchers:
+        - severity="critical"
+      receiver: critical
+      repeat_interval: 1h
+
+receivers:
+  - name: default
+    # Example: webhook to a generic endpoint
+    webhook_configs:
+      - url: "http://host.docker.internal:5001/alerts"
+        send_resolved: true
+
+  - name: critical
+    # Example: Slack
+    slack_configs:
+      - api_url: "https://hooks.slack.com/services/REPLACE/ME"
+        channel: "#alerts-critical"
+        send_resolved: true
